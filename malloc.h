@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#define HEAP_SIZE 1048576 //Heap size
-#define Max_HEAP_CHUNK 1000 //MAx number of memory chuncks the heap can be devided in to
+#define HEAP_SIZE 1024 * 1024 //1MB Heap size
+#define Max_HEAP_CHUNK 100 //MAx number of memory chuncks the heap can be devided in to
 
 typedef struct{
   void* start; //address
@@ -43,7 +43,7 @@ void* hmalloc(size_t size){
       result = metadata[i].start;
       metadata[i].state = 1;
       
-      //Merge the remaining part of the allocated chunk if the next chunck if free or add it in the chunck list in place of an invalid chunk if there is one
+      //Merge the remaining part of the allocated chunk with the next chunk (free)
       if (size < metadata[i].size && metadata[i+1].state == 0){
         metadata[i+1].size = metadata[i].size - size ;
         metadata[i+1].start = metadata[i].start + size;
@@ -53,7 +53,6 @@ void* hmalloc(size_t size){
     break;
     }
   }
-  //printf("Allocated chunck of size: %zu @ addrr: %p metadata entry: %d\n", size, result, entry);
   return result;
 }
 
@@ -83,6 +82,6 @@ void hmfree(void* ptr){
       break;
     }
   }
-  //printf("Free chunck of size: %zu @ addrr: %p entry: %d\n", metadata[entry].size, metadata[entry].start, entry);
   return;
 }
+  
